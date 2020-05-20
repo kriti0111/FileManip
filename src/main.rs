@@ -9,9 +9,9 @@ fn main() {
     let filename = &args[1]; 
 
     let contents = read_File(filename.to_string());
-    let mut v: Vec<&str> = Vec::new();
-    let y = parse_File(&contents, &mut v).to_vec();
-    write_To_File(&y);
+    
+    let y = parse_File(contents);
+    write_To_File(y);
 }
 
 fn read_File(filename : String) -> String{
@@ -20,33 +20,32 @@ fn read_File(filename : String) -> String{
     return contents
 }
 
-fn parse_File<'a>(contents: &'a std::string::String, v:&'a mut Vec<&'a str> ) -> &'a Vec<&'a str>{
-    
-    let mut x:i32;
+fn parse_File (contents: String) -> Vec<String>{
+    let mut fizzBuzzVec: Vec<String> = Vec::new();
+
     for line in contents.lines(){
-       x=  line.trim().parse().expect("File does not contain numbers");
+       let x:i32 = line.trim().parse().expect("File does not contain numbers");
        
        if x%15 == 0{
-        v.push("FizzBuzz");
+        fizzBuzzVec.push("FizzBuzz".to_string());
        }
        else if x%5 == 0{
-        v.push("Buzz");
+        fizzBuzzVec.push("Buzz".to_string());
        }
        else if x%3==0 {
-        v.push("Fizz");
+        fizzBuzzVec.push("Fizz".to_string());
        }
        else {
-           v.push(line);
+           fizzBuzzVec.push(line.to_string());
        }
     }
-    v
+    fizzBuzzVec
 }
 
-fn write_To_File(v: & Vec<&str>){
+fn write_To_File(v:Vec<String>){
     let mut file = File::create("foo.txt").expect("Unable to create file");
     for i in v{                                                                                                                                                                  
         file.write_all((*i).as_bytes()).expect("Unable to write data");       
         file.write_all("\n".as_bytes()).expect("Unable to write data");                                                                                                                       
     }
-    
 }
