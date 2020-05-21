@@ -53,8 +53,7 @@ fn parse_file (contents: String) ->String{
        }
        
     }
-    let concat_data = fizzBuzzVec.join("\n"); 
-    return concat_data
+    return fizzBuzzVec.join("\n")
 }
 
 fn write_file(data: String){
@@ -66,4 +65,3 @@ fn write_file(data: String){
     assert!(file.write_all((data).as_bytes()).is_ok());       
 
 }
-
