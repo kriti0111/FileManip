@@ -1,51 +1,67 @@
 use std::env;
 use std::fs::{self, File};
 use std::io::Write;
+use std::time::Instant;
 
 
 fn main() {
- 
+    let start = Instant::now();
     let args: Vec<String> = env::args().collect();
+    if args.len() < 2 {
+        panic!("not enough arguments please specify the file name");
+    }
     let filename = &args[1]; 
 
-    let contents = read_File(filename.to_string());
+    let contents = read_file(filename.to_string());
     
-    let y = parse_File(contents);
-    write_To_File(y);
+    let data = parse_file(contents);
+    write_file(data);
+   let duration = start.elapsed();
+
+   println!("Time elapsed is: {:?}", duration);
 }
 
-fn read_File(filename : String) -> String{
-    let contents = fs::read_to_string(filename)
-    .expect("Something went wrong reading the file");
+fn read_file(filename : String) -> String{
+    let contents = match fs::read_to_string(filename){
+        Ok(fc) => fc,
+        Err(e) => panic!("Problem reading the file: {:?}", e),
+    };
     return contents
 }
 
-fn parse_File (contents: String) -> Vec<String>{
+fn parse_file (contents: String) ->String{
     let mut fizzBuzzVec: Vec<String> = Vec::new();
-
+    
     for line in contents.lines(){
-       let x:i32 = line.trim().parse().expect("File does not contain numbers");
-       
-       if x%15 == 0{
+       let number:i32 = match line.trim().parse() {
+        Ok(num) => num,
+        Err(_) => {fizzBuzzVec.push(line.to_string());  
+            continue;},
+    };
+
+    if number%15 == 0{
         fizzBuzzVec.push("FizzBuzz".to_string());
        }
-       else if x%5 == 0{
+       else if number%5 == 0{
         fizzBuzzVec.push("Buzz".to_string());
        }
-       else if x%3==0 {
+       else if number%3==0 {
         fizzBuzzVec.push("Fizz".to_string());
        }
        else {
            fizzBuzzVec.push(line.to_string());
        }
+       
     }
-    fizzBuzzVec
+    return fizzBuzzVec.join("\n")
 }
 
-fn write_To_File(v:Vec<String>){
-    let mut file = File::create("foo.txt").expect("Unable to create file");
-    for i in v{                                                                                                                                                                  
-        file.write_all((*i).as_bytes()).expect("Unable to write data");       
-        file.write_all("\n".as_bytes()).expect("Unable to write data");                                                                                                                       
-    }
+fn write_file(data: String){
+    let mut file = match File::create("foo.txt"){
+        Ok(fc) => fc,
+        Err(e) => panic!("Problem creating the file: {:?}", e),
+    };
+                                                                                                                                                                    
+    assert!(file.write_all((data).as_bytes()).is_ok());       
+
 }
